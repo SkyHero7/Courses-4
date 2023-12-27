@@ -1,32 +1,38 @@
 from src.api import HeadHunterAPI, SuperJobAPI
-from src.models import Vacancy
-from src.utils import JSONSaver
+from src.json_saver import JSONSaver
 
+def interact_with_user(json_saver):
+    platform, keyword = json_saver.get_user_input()
+
+    if platform == "superjob":
+        vacancies = json_saver.superjob_api.get_vacancies(keyword)
+    elif platform == "hh":
+        vacancies = json_saver.hh_api.get_vacancies(keyword)
+    else:
+        print("Неверная платформа. Выберите superjob или hh.")
+        return
+
+    # Выводим вакансии или обрабатываем их дальше
+    for vacancy in vacancies:
+        print(vacancy.name, vacancy.salary, vacancy.description)
 
 def main():
-    hh_api = HeadHunterAPI()
-    superjob_api = SuperJobAPI(api_key='3276')
-    json_saver = JSONSaver()
+    hh_api_key = "api_key_для_HeadHunter"
+    superjob_api_key = SuperJobAPI(api_key='3276')
+
+    hh_api = HeadHunterAPI(hh_api_key)
+    superjob_api = SuperJobAPI(superjob_api_key)
 
     hh_vacancies = hh_api.get_vacancies("Python")
     superjob_vacancies = superjob_api.get_vacancies("Python")
 
-    for hh_vacancy in hh_vacancies:
-        vacancy = Vacancy(**hh_vacancy)
-        json_saver.add_vacancy(vacancy)
-
-    for superjob_vacancy in superjob_vacancies:
-        vacancy = Vacancy(**superjob_vacancy)
-        json_saver.add_vacancy(vacancy)
-
-    json_saver.save_to_json()
-    json_saver.load_from_json()
-
-    filtered_vacancies = json_saver.get_vacancies_by_salary(50000, 100000)
-
-    for vacancy in filtered_vacancies:
-        print(vacancy)
+    print(hh_vacancies)
+    print(superjob_vacancies)
 
 
 if __name__ == "__main__":
-    main()
+    superjob_api = SuperJobAPI(app_id="3276", secret_key="v3.r.138050817.4c3855a0639d54c0922748478bd393d6c3e2764e.4e47dd609f838b394fcde97a447ddaf974b7eb92")
+    hh_api = HeadHunterAPI(api_key="your_headhunter_app_key")
+    json_saver = JSONSaver(superjob_api, hh_api, "vacancies.json")
+
+    interact_with_user(json_saver)
