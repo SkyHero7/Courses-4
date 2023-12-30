@@ -12,13 +12,15 @@ def interact_with_user(json_saver):
         print("Неверная платформа. Выберите superjob или hh.")
         return
 
-    # Выводим вакансии или обрабатываем их дальше
-    for vacancy in vacancies:
-        print(vacancy.name, vacancy.salary, vacancy.description)
+    print('DEBUG_1', vacancies)  # добавил_1
+    for item in vacancies:
+        if isinstance(item, dict):
+            print('DEBUG_2')  # добавил_2
+            print(item.get('name'), item.get('salary'), item.get('description'))
 
 def main():
     hh_api_key = "api_key_для_HeadHunter"
-    superjob_api_key = SuperJobAPI(api_key='3276')
+    superjob_api_key = SuperJobAPI(api_key='3276', secret_key="v3.r.138050817.4c3855a0639d54c0922748478bd393d6c3e2764e.4e47dd609f838b394fcde97a447ddaf974b7eb92")
 
     hh_api = HeadHunterAPI(hh_api_key)
     superjob_api = SuperJobAPI(superjob_api_key)
@@ -31,8 +33,8 @@ def main():
 
 
 if __name__ == "__main__":
-    superjob_api = SuperJobAPI(app_id="3276", secret_key="v3.r.138050817.4c3855a0639d54c0922748478bd393d6c3e2764e.4e47dd609f838b394fcde97a447ddaf974b7eb92")
-    hh_api = HeadHunterAPI(api_key="your_headhunter_app_key")
+    superjob_api = SuperJobAPI(api_key="3276", secret_key="v3.r.138050817.4c3855a0639d54c0922748478bd393d6c3e2764e.4e47dd609f838b394fcde97a447ddaf974b7eb92")
+    hh_api = HeadHunterAPI(api_key="P2V4KSUBEL7SVA1A4B1FQDBD80KQI3I1J0ICHSJB4232UGAV7JS0JJO9POORBVA6")
     json_saver = JSONSaver(superjob_api, hh_api, "vacancies.json")
 
     interact_with_user(json_saver)

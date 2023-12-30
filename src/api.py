@@ -26,24 +26,20 @@ class HeadHunterAPI:
 
 
 class SuperJobAPI:
-    def __init__(self, app_id, secret_key):
-        self.app_id = app_id
+    def __init__(self, api_key, secret_key):
+        self.api_key = api_key
         self.secret_key = secret_key
-        self.base_url = "https://api.superjob.ru/2.33"
-
-    def get_vacancies(self, keyword):
-        params = {
-            "keyword": keyword,
-            "X-Api-App-Id": self.app_id
+        self.base_url = "https://api.superjob.ru/2.0/vacancies/"
+        self.headers = {
+            "X-Api-App-Id": self.api_key,
+            "X-Api-Secret-Id": self.secret_key,
         }
-        vacancies_data = self._fetch_vacancies_data(keyword)
-
-        vacancies = [Vacancy(**data) for data in vacancies_data]
-        return vacancies
 
     def _fetch_vacancies_data(self, keyword):
-        data = [
-            {'title': 'Python Developer', 'salary': '100,000 руб.', 'description': '...'},
-            {'title': 'Data Scientist', 'salary': '120,000 руб.', 'description': '...'},
-        ]
-        return data
+        params = {"keyword": keyword}
+        response = requests.get(self.base_url, params=params, headers=self.headers)
+        return response.json()
+
+    def get_vacancies(self, keyword):
+        vacancies_data = self._fetch_vacancies_data(keyword)
+        return vacancies_data.get("items", [])
